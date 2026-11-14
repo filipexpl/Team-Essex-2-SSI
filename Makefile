@@ -2,10 +2,11 @@ TASK ?= mi
 PID ?= P00
 DEVICE ?= synthetic
 TRIALS ?= 15
+STUDY ?= generic
 DATASET ?= synthetic
 MODEL ?= csp_lda
 
-.PHONY: setup test lint eval eval-smoke data calibrate live calib-curve
+.PHONY: setup test lint eval eval-smoke data calibrate live calib-curve board-check
 
 setup:
 	pip install -e ".[dev]"
@@ -28,10 +29,13 @@ data:
 	bash scripts/download_data.sh
 
 calibrate:
-	python scripts/calibrate.py --task $(TASK) --user $(PID) --device $(DEVICE) --trials $(TRIALS)
+	python scripts/calibrate.py --task $(TASK) --user $(PID) --device $(DEVICE) --trials $(TRIALS) --study $(STUDY)
 
 live:
 	python scripts/live.py --task $(TASK) --user $(PID) --device $(DEVICE)
 
 calib-curve:
 	python -m ssmi.evals.calibration_curve --task $(TASK) --dataset $(DATASET) --model $(MODEL)
+
+board-check:
+	python scripts/board_check.py

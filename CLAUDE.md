@@ -25,15 +25,16 @@ make eval-smoke   # eval na danych syntetycznych (CI)
 make eval TASK=mi DATASET=physionet MODEL=csp_lda
 make eval TASK=ss DATASET=gaddy MODEL=td_features_lda
 make data         # pobiera publiczne datasety do data/raw (wymaga sieci)
-make calibrate TASK=ss PID=P07 DEVICE=synthetic|lsl   # kalibracja nowej osoby → profiles/
-make live TASK=ss PID=P07 DEVICE=synthetic|lsl        # dekodowanie na żywo z profilu
+python scripts/board_check.py   # PIERWSZE na sprzęcie: fs, kanały, jednostki, lag, markery
+make calibrate TASK=ss PID=P07 DEVICE=synthetic|board   # kalibracja nowej osoby → profiles/
+make live TASK=ss PID=P07 DEVICE=synthetic|board        # dekodowanie na żywo z profilu
 make calib-curve TASK=ss DATASET=own MODEL=td_features_lda  # ile prób kalibracji trzeba
 ```
 
 ## Architektura
 ```
 src/ssmi/
-  acquisition/   # BrainAccess / LSL / synthetic → wspólny obiekt Recording
+  acquisition/   # board.py (BrainAccess Board API, główna ścieżka) / LSL / synthetic
   preprocessing/ # filtry (bandpass, notch 50 Hz), epokowanie, resampling
   datasets/      # loadery: PhysioNet EEGMMIDB, BCI IV 2a, Gaddy EMG, nagrania własne
   models/        # baseline'y + registry; interfejs sklearn (fit/predict/predict_proba)

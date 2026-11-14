@@ -1,5 +1,11 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-14 — Acquisition through the BrainAccess Board Python API 1.0.2 (`BoardSource`):
+  live windows from `get_mne`, Board `.db` recording via `start_recording`, cue/go markers on our
+  own LSL outlet attached with `connect_device`. Session files now store vocab, study,
+  protocol_version, git_commit, timing and markers. Units, DB lag and markers-in-.db unverified
+  until `scripts/board_check.py` runs on hardware.
+
 - 2026-11-14 — Hardware supports 250 and 500 Hz. Silent speech is recorded at **500 Hz**
   (Nyquist 250 Hz, most of the sEMG band); 250 Hz versions are made offline for IITK comparisons.
   Gaddy notebook simulates both 500 and 250 Hz.
