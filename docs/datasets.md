@@ -21,6 +21,25 @@ per person on our own recordings (`docs/calibration.md`).
 | EMG-UKA Trial Corpus (Wand 2014) | English read sentences (~108-word test vocab in session-independent work) | sentences | 4 (trial subset of 8) | 6 @ 600 Hz | trial subset free (1:52 h), CSL Bremen | session-independent baseline |
 | CSL-EMG_Array (Diener 2020) | sentences | sentences | 8, 12 sessions | electrode array | open access | — |
 
+### IITK — what we found (loader `ssmi.datasets.iitk`, `make eval TASK=ss DATASET=iitk`)
+Data: 461 isolated words (~20 per word, **one CSV per word**) + 127 words cut from 31 mouthed
+sentences (3 of 34 files skipped: marker count != words + 1). Window 1.2 s from 0.1 s before onset.
+
+| eval | balanced acc. | chance |
+|---|---|---|
+| isolated words, leave-one-repetition-block-out | 0.71 | 0.045 |
+| **confound check**: 0.8 s of *rest before each word* (no articulation), 5-fold | **0.24** | 0.045 |
+| isolated words → words in sentences (`evals.transfer`) | 0.05 | 0.045 |
+| same + Euclidean alignment | 0.06 | 0.045 |
+
+Interpretation: the rest segment alone predicts the "word" at ~5× chance, so a large part of
+the 0.71 is **per-file recording drift** (one word = one recording), not articulation. In
+sentences (different context, coarticulation, no per-file cue) the baseline is at chance.
+Consequences for us: (1) our protocol already interleaves words in random order within a
+session — never record one word per block; (2) report IITK results only with the transfer test;
+(3) silent speech needs features/models that survive context — next experiments: per-session
+normalization, Riemann tangent space on EMG covariances (Gowda et al.), small CNN.
+
 ## Motor imagery (EEG)
 
 | Dataset | "Vocabulary" (classes) | Subjects | Ch / fs | Access | Use |

@@ -56,6 +56,11 @@ only show the machinery works, they say nothing about real data:
 Plan for real data: as soon as 2–3 team members have recorded, run the curve and pick K for the
 demo (smallest K where `pooled_ea` is within ~5 pp of K=20).
 
+## Protocol rule learned from IITK
+Always interleave all words in random order within one session (calibrate.py does this). Recording
+each word in its own block lets the model learn recording drift instead of articulation
+(see `docs/datasets.md`, IITK section).
+
 ## Limits
 - Pooled mode requires identical channel names, class lists and fs; otherwise it falls back to
   subject-only (printed by the script).

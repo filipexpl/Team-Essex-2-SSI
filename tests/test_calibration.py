@@ -75,3 +75,16 @@ def test_vocab_is_english_strings():
         assert all(isinstance(w, str) for w in words), f"{name}: unquoted yes/no -> bool"
         assert all(w.isascii() for w in words), f"{name}: non-English characters"
         assert len(set(words)) == len(words), f"{name}: duplicates"
+
+
+def test_iitk_loader_if_present():
+    import pytest
+
+    from ssmi.datasets.iitk import _root
+
+    if not (_root(None) / "words-rec").exists():
+        pytest.skip("IITK data not downloaded (make data)")
+    w, s = load("ss", "iitk"), load("ss", "iitk_sent")
+    assert w.X.shape[1:] == (8, 300) and len(np.unique(w.y)) == 22
+    assert w.class_names == s.class_names and len(s.y) > 100
+    assert len(np.unique(w.groups)) == 4  # chronological repetition blocks

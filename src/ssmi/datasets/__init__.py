@@ -21,6 +21,10 @@ def load(task: str, name: str, **kw) -> Recording:
         return syn.make_mi(**kw) if task == "mi" else syn.make_ss(**kw)
     if task == "mi" and name == "physionet":
         return load_physionet_mi(**kw)
+    if task == "ss" and name in ("iitk", "iitk_sent"):
+        from ssmi.datasets.iitk import load_iitk_sentences, load_iitk_words
+
+        return load_iitk_words(**kw) if name == "iitk" else load_iitk_sentences(**kw)
     if task == "ss" and name == "gaddy":
         return load_gaddy(**kw)
     if name == "own":

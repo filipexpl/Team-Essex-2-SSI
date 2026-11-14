@@ -1,5 +1,10 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-14 — IITK loader (words + words-from-sentences) and `evals.transfer`. TD-features+LDA:
+  isolated words 0.71 (LOBO), but pre-onset rest alone 0.24 (chance 0.045) => per-file confound;
+  words -> sentences 0.05 (chance). Keep randomized word order in our protocol; judge SS models on
+  transfer, not on IITK isolated words.
+
 - 2026-11-14 — Silent speech is **English only** (team decision). Vocabularies switched to EN:
   `core6` (yes/no/up/down/left/right), `control10`, `iitk22` (= IITK public set, same 8 ch @ 250 Hz),
   `nato26` (= Gowda et al.), `care12`, `digits10`. MI unchanged.
