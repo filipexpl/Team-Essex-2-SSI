@@ -1,0 +1,16 @@
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+results/*.json
+!results/.gitkeep
+*.npy
+*.edf
+*.fif
+*.xdf
+.env

@@ -1,0 +1,30 @@
+name: eval-real-data
+# Manual / nightly eval on public datasets (downloads PhysioNet EEGMMIDB, cached).
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        default: csp_lda
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  physionet-mi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - uses: actions/cache@v4
+        with:
+          path: data/raw/physionet
+          key: physionet-eegmmidb-v1
+      - run: pip install -e ".[dev,eeg]"
+      - run: make eval TASK=mi DATASET=physionet MODEL=${{ inputs.model || 'csp_lda' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-physionet
+          path: results/*.json

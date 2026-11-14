@@ -1,0 +1,21 @@
+# Minimum quality gates. Claude must NOT lower these to make CI green.
+# Change only by explicit human decision, recorded in docs/decisions.md.
+
+mi/synthetic:          # sanity check: pipeline works at all
+  min_balanced_accuracy: 0.70
+  max_latency_ms: 50
+
+ss/synthetic:
+  min_balanced_accuracy: 0.70
+  max_latency_ms: 50
+
+mi/physionet:          # 4-class imagery, 8 channels, cross-subject. Literature: ~0.40-0.55
+  min_balanced_accuracy: 0.35   # chance = 0.25
+
+mi/own:                # our BrainAccess MINI data, cross-session
+  min_balanced_accuracy: 0.40
+  max_latency_ms: 100
+
+ss/own:                # our EXG8 facial EMG, cross-session, 6-10 words
+  min_balanced_accuracy: 0.60
+  max_latency_ms: 100

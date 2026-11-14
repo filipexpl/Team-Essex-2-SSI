@@ -1,0 +1,7 @@
+# Optional: deep-model training (EEGNet / EMG transformer pretraining on Gaddy).
+# Build & run on any CUDA host:  docker build -f Dockerfile.gpu -t ssmi-gpu . && docker run --gpus all ssmi-gpu
+FROM pytorch/pytorch:2.4.0-cuda12.1-cudnn9-runtime
+WORKDIR /app
+COPY . .
+RUN pip install -e ".[dev,eeg,dl]"
+CMD ["make", "eval-smoke"]

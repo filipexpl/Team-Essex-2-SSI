@@ -1,0 +1,30 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: make lint
+      - run: make test
+      - run: make eval-smoke
+      - name: Guard thresholds
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          if git diff --name-only origin/${{ github.base_ref }} | grep -q '^evals/thresholds.yaml$'; then
+            echo "::error::thresholds.yaml changed - needs explicit human approval"; exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: results/*.json

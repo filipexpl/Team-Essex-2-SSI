@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssmi"
+version = "0.1.0"
+description = "Silent speech (facial sEMG) + motor imagery (EEG) decoding for BrainAccess hardware"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "scikit-learn>=1.4",
+  "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5"]
+eeg = ["mne>=1.7", "moabb>=1.1", "pyriemann>=0.6"]
+dl = ["torch>=2.3", "braindecode>=0.8"]
+hw = ["pylsl>=1.16", "brainaccess"]
+all = ["ssmi[dev,eeg,dl,hw]"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

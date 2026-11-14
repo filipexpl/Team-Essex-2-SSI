@@ -1,0 +1,9 @@
+{
+  "name": "ssmi (CPU)",
+  "build": { "dockerfile": "Dockerfile" },
+  "postCreateCommand": "pip install -e '.[dev,eeg]'",
+  "customizations": {
+    "vscode": { "extensions": ["ms-python.python", "charliermarsh.ruff"] }
+  },
+  "features": { "ghcr.io/devcontainers/features/github-cli:1": {} }
+}
