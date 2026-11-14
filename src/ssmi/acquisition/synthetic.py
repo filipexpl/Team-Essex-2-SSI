@@ -65,7 +65,7 @@ def make_mi(n_per_class=40, n_subjects=3, fs=250.0, dur=3.0, seed=0, mix=0.0) ->
 
 
 def make_ss(
-    words=("tak", "nie", "start", "stop", "lewo", "prawo"),
+    words=("yes", "no", "up", "down", "left", "right"),
     n_per_class=30,
     n_sessions=3,
     fs=250.0,

@@ -2,7 +2,7 @@
 
 ## Cel projektu
 Hackathon neurotech. Dwa strumienie dekodowania, jedna wspólna aplikacja:
-1. **Silent speech (sEMG twarzy)** — 8 elektrod na twarzy, klasyfikacja małego słownika słów/komend wypowiadanych bezgłośnie.
+1. **Silent speech (sEMG twarzy)** — 8 elektrod na twarzy, klasyfikacja małego słownika **angielskich** słów/komend wypowiadanych bezgłośnie (tylko EN — nie dodawaj polskich słów).
 2. **Intencje motoryczne (EEG, motor imagery)** — 4 klasy: `left_hand`, `right_hand`, `both_hands`, `feet` (+ opcjonalnie `rest`).
 
 Sprzęt: **BrainAccess MINI** (8 kanałów EEG, elektrody suche, BT) oraz **EXG8** (8 kanałów, do sEMG twarzy).
@@ -40,7 +40,7 @@ src/ssmi/
   calibration/   # Euclidean Alignment + UserProfile (kalibracja nowej osoby)
   evals/         # metryki, splity, runner, krzywa kalibracji, raport JSON → results/
 scripts/         # calibrate.py (nagranie z cue + profil), live.py (dekodowanie)
-configs/vocab.yaml  # słowniki PL + parametry protokołu
+configs/vocab.yaml  # słowniki EN (silent speech TYLKO po angielsku) + parametry protokołu
 ```
 Kalibracja i datasety: `docs/calibration.md`, `docs/datasets.md`. Każda zmiana modelu powinna
 być sprawdzona także krzywą kalibracji (nowa osoba = najważniejszy scenariusz demo).

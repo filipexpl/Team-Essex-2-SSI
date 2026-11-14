@@ -59,7 +59,8 @@ demo (smallest K where `pooled_ea` is within ~5 pp of K=20).
 ## Limits
 - Pooled mode requires identical channel names, class lists and fs; otherwise it falls back to
   subject-only (printed by the script).
-- Silent speech: no public Polish data, so the "source" is our own team's recordings — the more
-  people record, the shorter calibration gets.
+- Silent speech: public English data uses other electrode layouts (except IITK: 8 ch @ 250 Hz,
+  `iitk22` vocab), so the main "source" is our own team's recordings — the more people record,
+  the shorter calibration gets.
 - Live decoding is push-to-talk (Enter → 1.5 s window). Continuous detection of word onsets is a
   next step (energy-based VAD on EMG envelope).

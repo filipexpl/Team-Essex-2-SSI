@@ -63,3 +63,15 @@ def test_calibration_curve_alignment_helps_on_shifted_data():
     acc = out["balanced_accuracy"]
     assert acc["source_only_ea"][5] >= acc["source_only_raw"][5]
     assert acc["pooled_ea"][5] > out["chance"]
+
+
+def test_vocab_is_english_strings():
+    import yaml
+
+    from ssmi.calibration import PROFILES
+
+    cfg = yaml.safe_load((PROFILES.parent / "configs" / "vocab.yaml").read_text())
+    for name, words in cfg["silent_speech"].items():
+        assert all(isinstance(w, str) for w in words), f"{name}: unquoted yes/no -> bool"
+        assert all(w.isascii() for w in words), f"{name}: non-English characters"
+        assert len(set(words)) == len(words), f"{name}: duplicates"

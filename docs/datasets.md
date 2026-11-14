@@ -1,9 +1,10 @@
 # Datasets
 
 What exists, what vocabulary each covers, and what we can realistically use it for.
-Summary: **no public dataset has Polish words with our 8-electrode layout.** Public data is for
-pretraining, method validation and benchmarking; the demo model is calibrated per person on our
-own recordings (`docs/calibration.md`).
+Silent speech is **English only**. All English sEMG sets below share at least part of their
+vocabulary with ours (`configs/vocab.yaml`), but only IITK matches our hardware (8 ch @ 250 Hz).
+Public data is for pretraining, method validation and benchmarking; the demo model is calibrated
+per person on our own recordings (`docs/calibration.md`).
 
 ## Silent speech (facial sEMG)
 
@@ -32,5 +33,14 @@ EEGMMIDB caveat: T1/T2 = left/right fist in runs 3,4,7,8,11,12 but both-fists/bo
 5,6,9,10,13,14 — handled in `datasets.load_physionet_mi`.
 
 ## Our vocabularies (`configs/vocab.yaml`)
-`core6` (demo), `control10`, `care12`, `digits10` in Polish. Start with `core6`; grow only when
-cross-session accuracy on our own data holds (see `docs/calibration.md`).
+English only. Start with `core6` (yes, no, up, down, left, right); grow only when cross-session
+accuracy on our own data holds (see `docs/calibration.md`).
+
+| vocab | words | overlap with public data |
+|---|---|---|
+| `core6` | yes, no, up, down, left, right | "right" ∈ IITK-22 |
+| `control10` | core6 + stop, go, help, back | right, stop, help, back ∈ IITK-22 |
+| `iitk22` | exactly IITK-22 | **100 %** IITK (same 8 ch @ 250 Hz) → benchmark / pretraining |
+| `nato26` | NATO alphabet | **100 %** Gowda et al. (16 subjects) → spelling any word |
+| `care12` | water, food, pain, cold, hot, toilet, help, yes, no, doctor, sleep, thanks | help ∈ IITK-22 |
+| `digits10` | zero … nine | number words in Gaddy closed vocab (dates/times) |

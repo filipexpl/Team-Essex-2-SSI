@@ -1,50 +1,70 @@
 # Vocabularies for our own recordings. Pick one with --vocab <name>.
+# Silent speech is ENGLISH ONLY.
 # Rule of thumb: start small (6), add words only when cross-session accuracy holds.
 # Choose words that differ in articulators (lips vs tongue vs jaw), not just in sound.
 
-silent_speech:
-  core6:        # demo minimum: bilabial / velar / dental / rounded contrasts
-    - tak
-    - nie
-    - start
+silent_speech:   # ENGLISH ONLY (team decision 2026-11-14)
+  core6:        # demo minimum; words differ in articulators, not just in sound
+    - "yes"     # spread lips + tongue glide        (quoted: bare yes/no are booleans in YAML)
+    - "no"      # nasal + lip rounding
+    - up        # open jaw + bilabial closure
+    - down      # alveolar stop + rounding
+    - left      # lateral /l/ + alveolar
+    - right     # /r/ rounding + alveolar stop      (also in IITK-22)
+  control10:    # app / device control: core6 + 4
+    - "yes"
+    - "no"
+    - up
+    - down
+    - left
+    - right
+    - stop      # in IITK-22
+    - go
+    - help      # in IITK-22
+    - back      # in IITK-22
+  iitk22:       # exactly the IITK public dataset vocabulary (8 ch @ 250 Hz, OpenBCI Cyton)
+                # -> same words as public data: pretraining / benchmark with our pipeline
+    - all
+    - anyone
+    - anything
+    - are
+    - back
+    - can
+    - come
+    - could
+    - did
+    - doing
+    - find
+    - help
+    - here
+    - in
+    - now
+    - out
+    - please
+    - right
     - stop
-    - lewo
-    - prawo
-  control10:    # app / device control
-    - tak
-    - nie
-    - start
-    - stop
-    - lewo
-    - prawo
-    - góra
-    - dół
-    - pomoc
-    - dalej
+    - that
+    - tomorrow
+    - you
+  nato26:       # Gowda et al. public data (16 subjects): spelling arbitrary words letter by letter
+    [alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel, india, juliett, kilo, lima, mike,
+     november, oscar, papa, quebec, romeo, sierra, tango, uniform, victor, whiskey, xray, yankee,
+     zulu]
   care12:       # assistive needs (inspired by AVE Speech daily-needs corpus)
-    - pić
-    - jeść
-    - boli
-    - zimno
-    - ciepło
-    - toaleta
-    - pomoc
-    - tak
-    - nie
-    - lekarz
-    - spać
-    - dziękuję
-  digits10:
-    - zero
-    - jeden
-    - dwa
-    - trzy
-    - cztery
-    - pięć
-    - sześć
-    - siedem
-    - osiem
-    - dziewięć
+    - water
+    - food
+    - pain
+    - cold
+    - hot
+    - toilet
+    - help
+    - "yes"
+    - "no"
+    - doctor
+    - sleep
+    - thanks
+  digits10:     # number words also occur in Gaddy & Klein closed-vocab (dates/times)
+    [zero, one, two, three, four, five, six, seven, eight, nine]
 
 motor_imagery:
   four_class: [left_hand, right_hand, both_hands, feet]

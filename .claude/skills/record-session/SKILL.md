@@ -9,7 +9,8 @@ Protocol defaults (change only with the team):
 - **MI**: fixation 2 s → cue (arrow ←, →, ↑ both hands, ↓ feet) 4 s imagery → rest 2–3 s
   random. 4 classes × 20 trials per run, randomized order, 3–4 runs per session, pause
   between runs. Epoch 0.5–3.5 s after cue.
-- **Silent speech**: 6–10 words (PL, e.g. tak, nie, start, stop, lewo, prawo, pomoc, dalej).
+- **Silent speech**: 6–10 **English** words from `configs/vocab.yaml` (default `core6`: yes, no, up, down,
+  left, right). English only.
   Cue word 1 s → beep → silent articulation window 1.5 s → rest 1.5 s. 20–30 reps per word
   per session. Record ≥ 3 sessions with electrodes re-attached between them (to test
   cross-session generalization). Also record 30 s of rest and some vocalized repetitions.
