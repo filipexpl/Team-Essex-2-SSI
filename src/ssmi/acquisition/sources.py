@@ -68,11 +68,12 @@ def open_source(
     realtime: bool = False,
     board_device: str | None = None,
     lag_s: float = 0.25,
+    channels=None,
 ):
     if device == "board":  # BrainAccess Board Python API (recommended for real hardware)
         from ssmi.acquisition.board import BoardSource
 
-        return BoardSource(device=board_device, lag_s=lag_s)
+        return BoardSource(device=board_device, lag_s=lag_s, channels=channels)
     if device == "synthetic":
         return SyntheticSource(task, class_names, realtime=realtime)
     if device == "lsl":

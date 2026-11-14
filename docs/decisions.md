@@ -1,5 +1,10 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-14 — First EXG8 recordings (P01, 2 sessions, core6): Board streams 25 channels at
+  1000 Hz incl. contact flags, IMU, counter, battery; they reached the model (overflow, CV 0.30-0.32).
+  Fix: name-based electrode selection + constant-channel drop in BoardSource and when loading
+  sessions (old files usable as is); `calibrate.py --from-npz` accepts several sessions (pooled).
+
 - 2026-11-14 — Gaddy & Klein reproduction in Colab (Python 3.13, recent PyTorch; fixes: ctcdecode ->
   pyctcdecode shim, current jiwer, `batch_first` in transformer.py; kenlm does not build, so no
   language model). Pre-trained recognition model, silent test set (100 utterances), WER without LM:

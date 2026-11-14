@@ -46,3 +46,12 @@ connected): live data via `db_connect()` + `get_mne(duration)`, recording contro
 `msg_connect()` commands (`start_recording` / `stop_recording`), markers as our own LSL outlet
 attached with `connect_device`. Implemented in `src/ssmi/acquisition/board.py`; use
 `--device board` in `calibrate.py` / `live.py`. LSLSource stays as a fallback.
+
+## Measured on EXG8 via BrainAccess Board (2026-11-14, Mac, first recordings)
+- Board streams **25 channels at 1000 Hz**: `F1`-`F8` = EMG electrodes; `contact_F1`-`contact_F8`
+  (constant flags), `Accel_x/y/z`, `Gyro_x/y/z`, `Sample` (counter), `Streaming`, `Battery`.
+  All are reported as signal channels, so `ssmi.acquisition.channels.select_channels` keeps only
+  electrodes (by name, and drops constant channels). Use `--channels F1,F2,...` to override.
+- Units after BoardSource (x1e6): microvolts. EMG channels: DC offset ~ -2000..9000 uV (removed by
+  the band-pass), std ~80-180 uV during the calibration block.
+- Before this fix, calibration fed all 25 channels to the model (numerical overflow, CV 0.30-0.32).

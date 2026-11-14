@@ -48,7 +48,7 @@ def main(argv=None):
     elif a.device == "board":
         from ssmi.acquisition.board import BoardSource
 
-        src = BoardSource(device=a.board_device, markers=False)
+        src = BoardSource(device=a.board_device, markers=False, channels=prof.ch_names)
     else:
         from ssmi.acquisition.brainaccess_stream import LSLSource
 
