@@ -24,7 +24,7 @@
 ## Do potwierdzenia na sprzęcie (Claude: NIE zgaduj tych wartości)
 | Parametr | MINI | EXG8 | Dlaczego ważne |
 |---|---|---|---|
-| Sampling rate (Hz) | ? (BrainAccess devices: 250 Hz on public specs) | ? | EMG: przy 250 Hz pasmo kończy się na 125 Hz |
+| Sampling rate (Hz) | ? (BrainAccess devices: 250 Hz on public specs) | **250 or 500 Hz (team, 2026-11-14) → record at 500 Hz** | 500 Hz: EMG band up to 250 Hz; 250 Hz only for IITK comparisons (downsample offline) |
 | Bipolar / monopolar inputs | monopolar, common ref | ? | EMG lepiej bipolarnie |
 | Hardware filters | ? | ? | high-pass dla EMG |
 | Dry or gel electrodes allowed | dry | ? | |
@@ -33,7 +33,7 @@
 | Can both devices run at once, synced? | hyperscanning supported | ? | hybrid EEG+EMG |
 
 ## Risks
-- Fs = 250 Hz for EMG loses part of the sEMG band (20–450 Hz). Still enough for word classification
+- Record EMG at 500 Hz (Nyquist 250 Hz): keeps most of the sEMG band (20–450 Hz). At 250 Hz part of the band is lost. Still enough for word classification
   (OpenBCI Cyton @250 Hz has been used for silent speech), but no direct transfer from 1000 Hz data
   without resampling.
 - Dry EEG + 8 channels: 4-class MI is hard. Expect ~40–60 % for our own data; plan a 2-class

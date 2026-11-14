@@ -28,3 +28,21 @@ jobs:
         with:
           name: eval-physionet
           path: results/*.json
+
+  iitk-ss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: git clone --depth 1 https://github.com/DarshanJain295/Silent-Speech-recognition-dataset data/raw/iitk
+      - run: make eval TASK=ss DATASET=iitk MODEL=td_features_lda
+      - run: python -m ssmi.evals.transfer --task ss --train iitk --test iitk_sent
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-iitk
+          path: results/*.json

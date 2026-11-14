@@ -15,5 +15,11 @@ if [ ! -f data/raw/gaddy/.done ]; then
     || echo "   !! Check exact file name on https://zenodo.org/records/4064409"
 fi
 
+echo "== IITK silent speech (22 EN words, 8ch @250Hz OpenBCI Cyton, 61 MB) =="
+if [ ! -d data/raw/iitk/words-rec ]; then
+  git clone --depth 1 https://github.com/DarshanJain295/Silent-Speech-recognition-dataset data/raw/iitk \
+    && rm -rf data/raw/iitk/.git
+fi
+
 echo "== BCI Competition IV 2a (optional, via MOABB: BNCI2014_001) =="
 python -c "import moabb" 2>/dev/null && echo "   moabb installed - loads on demand" || echo "   pip install -e '.[eeg]'"

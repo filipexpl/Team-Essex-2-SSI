@@ -59,5 +59,5 @@ Wspólny kontrakt danych: `X: (n_trials, n_channels, n_samples)`, `y: (n_trials,
 ## Kontekst domenowy (skrót)
 - MI: mu (8–12 Hz) i beta (13–30 Hz) nad C3/Cz/C4; ręce = lateralizacja ERD, stopy = Cz (środek). Baseline: filtr 8–30 Hz → CSP (one-vs-rest) → LDA, ewentualnie Riemann (tangent space).
 - Klasa `both_hands` vs `feet` jest trudna przy 8 suchych elektrodach — raportuj macierz pomyłek.
-- sEMG twarzy: energia głównie 20–450 Hz. Przy fs=250 Hz mamy tylko pasmo do 125 Hz — to wciąż działa (prace z OpenBCI Cyton 250 Hz), ale dataset Gaddy (1000 Hz) trzeba **downsamplować do fs urządzenia** przed transferem.
+- sEMG twarzy: energia głównie 20–450 Hz. Sprzęt obsługuje 250 i 500 Hz — **nagrywamy EMG przy 500 Hz** (pasmo do 250 Hz). Do porównań z IITK (250 Hz) downsamplujemy offline; dataset Gaddy (1000 Hz) trzeba **downsamplować do fs urządzenia** przed transferem.
 - Typowe artefakty: mruganie (EOG) w EEG, mimika/żucie w EMG, 50 Hz sieć (Polska!).
