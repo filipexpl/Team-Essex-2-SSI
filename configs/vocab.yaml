@@ -1,0 +1,62 @@
+# Vocabularies for our own recordings. Pick one with --vocab <name>.
+# Rule of thumb: start small (6), add words only when cross-session accuracy holds.
+# Choose words that differ in articulators (lips vs tongue vs jaw), not just in sound.
+
+silent_speech:
+  core6:        # demo minimum: bilabial / velar / dental / rounded contrasts
+    - tak
+    - nie
+    - start
+    - stop
+    - lewo
+    - prawo
+  control10:    # app / device control
+    - tak
+    - nie
+    - start
+    - stop
+    - lewo
+    - prawo
+    - góra
+    - dół
+    - pomoc
+    - dalej
+  care12:       # assistive needs (inspired by AVE Speech daily-needs corpus)
+    - pić
+    - jeść
+    - boli
+    - zimno
+    - ciepło
+    - toaleta
+    - pomoc
+    - tak
+    - nie
+    - lekarz
+    - spać
+    - dziękuję
+  digits10:
+    - zero
+    - jeden
+    - dwa
+    - trzy
+    - cztery
+    - pięć
+    - sześć
+    - siedem
+    - osiem
+    - dziewięć
+
+motor_imagery:
+  four_class: [left_hand, right_hand, both_hands, feet]
+  two_class: [left_hand, right_hand]   # fallback for the demo
+  cues:
+    left_hand: "← LEWA RĘKA (wyobraź sobie zaciskanie pięści)"
+    right_hand: "→ PRAWA RĘKA (wyobraź sobie zaciskanie pięści)"
+    both_hands: "↑ OBIE RĘCE"
+    feet: "↓ STOPY (wyobraź sobie zginanie palców stóp)"
+
+# Protocol timing in seconds
+protocol:
+  silent_speech: {prepare: 1.0, window: 1.5, rest: 1.5, rest_baseline: 20}
+  motor_imagery: {prepare: 2.0, window: 4.0, epoch_start: 0.5, epoch_end: 3.5, rest: 2.5,
+                  rest_baseline: 30}

@@ -20,7 +20,14 @@ def _pink_noise(rng, shape):
     return np.fft.irfft(np.fft.rfft(white) / np.sqrt(f), n=shape[-1])
 
 
-def make_mi(n_per_class=40, n_subjects=3, fs=250.0, dur=3.0, seed=0) -> Recording:
+def _mixing(rng, mix: float, n: int = 8) -> np.ndarray:
+    """Per-person spatial mixing: simulates shifted electrodes / different anatomy."""
+    if mix == 0:  # don't consume random numbers -> default datasets stay identical
+        return np.eye(n)
+    return np.eye(n) + mix * rng.standard_normal((n, n)) / np.sqrt(n)
+
+
+def make_mi(n_per_class=40, n_subjects=3, fs=250.0, dur=3.0, seed=0, mix=0.0) -> Recording:
     rng = np.random.default_rng(seed)
     n = int(fs * dur)
     t = np.arange(n) / fs
@@ -34,6 +41,7 @@ def make_mi(n_per_class=40, n_subjects=3, fs=250.0, dur=3.0, seed=0) -> Recordin
     X, y, g = [], [], []
     for s in range(n_subjects):
         mu_f = 10 + rng.uniform(-1.5, 1.5)
+        M = _mixing(rng, mix)
         for c in range(len(MI_CLASSES)):
             for _ in range(n_per_class):
                 x = _pink_noise(rng, (8, n)) * 2.0
@@ -42,7 +50,7 @@ def make_mi(n_per_class=40, n_subjects=3, fs=250.0, dur=3.0, seed=0) -> Recordin
                 for ch, mult in patterns[c].items():
                     amp[ch] *= mult
                 x += amp[:, None] * np.sin(2 * np.pi * mu_f * t + phase[:, None])
-                X.append(x)
+                X.append(M @ x)
                 y.append(c)
                 g.append(s)
     return Recording(
@@ -63,6 +71,7 @@ def make_ss(
     fs=250.0,
     dur=1.5,
     seed=0,
+    mix=0.0,
 ) -> Recording:
     rng = np.random.default_rng(seed)
     n = int(fs * dur)
@@ -75,6 +84,7 @@ def make_ss(
     }
     for sess in range(n_sessions):
         gain = rng.uniform(0.7, 1.3, 8)  # electrode re-attachment between sessions
+        M = _mixing(rng, mix)
         for c, w in enumerate(words):
             for _ in range(n_per_class):
                 x = rng.standard_normal((8, n)) * 0.5
@@ -82,7 +92,7 @@ def make_ss(
                 for ch, on, d in proto[w]:
                     env = np.exp(-0.5 * ((t - on - jitter) / (d / 2)) ** 2)
                     x[ch] += 4 * env * rng.standard_normal(n)
-                X.append(x * gain[:, None])
+                X.append(M @ (x * gain[:, None]))
                 y.append(c)
                 g.append(sess)
     return Recording(

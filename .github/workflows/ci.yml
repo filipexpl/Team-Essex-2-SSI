@@ -17,6 +17,7 @@ jobs:
       - run: make lint
       - run: make test
       - run: make eval-smoke
+      - run: make calib-curve TASK=mi DATASET=synthetic_shift MODEL=csp_lda
       - name: Guard thresholds
         if: github.event_name == 'pull_request'
         run: |

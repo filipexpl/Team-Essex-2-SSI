@@ -16,4 +16,6 @@ Protocol defaults (change only with the team):
 - Save each session as `data/processed/own_<task>/<participant>_<session>.npz` with keys
   X, y, fs, ch_names, classes, groups (session id). Participant = anonymous ID only.
 - Use LSL markers for cue timing; never rely on wall-clock sleep for epoch alignment.
-- After each session run the `signal-qc` skill.
+- Recording + calibration is implemented in `scripts/calibrate.py` (see `docs/calibration.md`);
+  extend it rather than writing a new recorder.
+- After each session run the `signal-qc` skill, then `make calib-curve` once >= 2 sessions exist.
