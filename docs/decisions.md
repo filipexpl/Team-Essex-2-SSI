@@ -1,5 +1,12 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-14 — Gaddy & Klein reproduction in Colab (Python 3.13, recent PyTorch; fixes: ctcdecode ->
+  pyctcdecode shim, current jiwer, `batch_first` in transformer.py; kenlm does not build, so no
+  language model). Pre-trained recognition model, silent test set (100 utterances), WER without LM:
+  **1000 Hz 0.400**, band-limited **500 Hz 0.880**, **250 Hz 0.969** (authors: ~0.28 with LM).
+  The 500/250 Hz drop is distribution shift of a model trained on the full band, not yet the
+  hardware cost; next: fine-tune at 500 Hz (notebook section 6).
+
 - 2026-11-14 — Real-time decoding (`ssmi.realtime`, `scripts/realtime.py`). SS: EMG energy onset
   (rest median + 6 MAD) cuts the window at the onset offset learned at calibration; MI: 3 s
   sliding window, EMA-smoothed, reported on stable change. Simulated person: SS 23/23 words
