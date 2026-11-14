@@ -6,7 +6,7 @@ STUDY ?= generic
 DATASET ?= synthetic
 MODEL ?= csp_lda
 
-.PHONY: setup test lint eval eval-smoke data calibrate live calib-curve board-check
+.PHONY: realtime setup test lint eval eval-smoke data calibrate live calib-curve board-check
 
 setup:
 	pip install -e ".[dev]"
@@ -39,3 +39,6 @@ calib-curve:
 
 board-check:
 	python scripts/board_check.py
+
+realtime:
+	python scripts/realtime.py --task $(TASK) --user $(PID) --device $(DEVICE)

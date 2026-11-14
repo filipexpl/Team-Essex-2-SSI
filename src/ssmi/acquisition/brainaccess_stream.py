@@ -27,6 +27,18 @@ class LSLSource:
         self.fs = info.nominal_srate()
         self.n_channels = info.channel_count()
 
+    def latest(self, seconds: float, max_buffer_s: float = 30.0) -> np.ndarray:
+        """Newest `seconds` of data from a rolling buffer (for the real-time loop)."""
+        if not hasattr(self, "_buf"):
+            self._buf = np.zeros((self.n_channels, 0))
+        while True:
+            data, _ = self.inlet.pull_chunk(timeout=0.0)
+            if not data:
+                break
+            self._buf = np.concatenate([self._buf, np.asarray(data).T], axis=1)
+        self._buf = self._buf[:, -int(max_buffer_s * self.fs) :]
+        return self._buf[:, -int(seconds * self.fs) :]
+
     def read(self, seconds: float) -> np.ndarray:
         n_target = int(self.fs * seconds)
         chunks, got = [], 0

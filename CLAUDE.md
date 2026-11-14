@@ -27,7 +27,8 @@ make eval TASK=ss DATASET=gaddy MODEL=td_features_lda
 make data         # pobiera publiczne datasety do data/raw (wymaga sieci)
 python scripts/board_check.py   # PIERWSZE na sprzęcie: fs, kanały, jednostki, lag, markery
 make calibrate TASK=ss PID=P07 DEVICE=synthetic|board   # kalibracja nowej osoby → profiles/
-make live TASK=ss PID=P07 DEVICE=synthetic|board        # dekodowanie na żywo z profilu
+make realtime TASK=ss PID=P07 DEVICE=synthetic|board    # ciągłe dekodowanie w czasie rzeczywistym
+make live TASK=ss PID=P07 DEVICE=synthetic|board        # dekodowanie push-to-talk (Enter)
 make calib-curve TASK=ss DATASET=own MODEL=td_features_lda  # ile prób kalibracji trzeba
 ```
 
@@ -39,6 +40,7 @@ src/ssmi/
   datasets/      # loadery: PhysioNet EEGMMIDB, BCI IV 2a, Gaddy EMG, nagrania własne
   models/        # baseline'y + registry; interfejs sklearn (fit/predict/predict_proba)
   calibration/   # Euclidean Alignment + UserProfile (kalibracja nowej osoby)
+  realtime/      # pętla czasu rzeczywistego: detekcja onsetu EMG (SS), okno przesuwne (MI); docs/realtime.md
   evals/         # metryki, splity, runner, krzywa kalibracji, raport JSON → results/
 scripts/         # calibrate.py (nagranie z cue + profil), live.py (dekodowanie)
 configs/vocab.yaml  # słowniki EN (silent speech TYLKO po angielsku) + parametry protokołu

@@ -38,6 +38,7 @@ class UserProfile:
     n_calib_per_class: int
     calib_cv_accuracy: float | None
     created: float = field(default_factory=time.time)
+    onset_offset_s: float | None = None  # silent speech: articulation onset in window
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         if X.ndim == 2:  # single trial (channels, samples)
@@ -114,6 +115,11 @@ def calibrate_user(
         cv = StratifiedKFold(k, shuffle=True, random_state=seed)
         cv_acc = float(cross_val_score(get_model(model_name, calib.fs), Xc, calib.y, cv=cv).mean())
     model, aligner = fit_calibrated(calib, model_name, source, mode, align)
+    onset = None
+    if task == "ss":
+        from ssmi.realtime.vad import trial_onset_offset
+
+        onset = trial_onset_offset(calib.X, calib.fs)
     return UserProfile(
         user_id,
         task,
@@ -126,4 +132,5 @@ def calibrate_user(
         mode,
         n_per_class,
         cv_acc,
+        onset_offset_s=onset,
     )

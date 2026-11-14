@@ -1,5 +1,10 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-14 — Real-time decoding (`ssmi.realtime`, `scripts/realtime.py`). SS: EMG energy onset
+  (rest median + 6 MAD) cuts the window at the onset offset learned at calibration; MI: 3 s
+  sliding window, EMA-smoothed, reported on stable change. Simulated person: SS 23/23 words
+  detected, 0 false triggers, 18/23 correct, <= 8.3 ms compute.
+
 - 2026-11-14 — Acquisition through the BrainAccess Board Python API 1.0.2 (`BoardSource`):
   live windows from `get_mne`, Board `.db` recording via `start_recording`, cue/go markers on our
   own LSL outlet attached with `connect_device`. Session files now store vocab, study,
