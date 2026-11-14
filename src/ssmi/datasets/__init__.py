@@ -15,7 +15,9 @@ MI_8CH = ["FC3", "FC4", "C3", "Cz", "C4", "CP3", "CPz", "CP4"]
 
 
 def load(task: str, name: str, **kw) -> Recording:
-    if name == "synthetic":
+    if name in ("synthetic", "synthetic_shift"):
+        if name == "synthetic_shift":  # strong between-person differences (calibration tests)
+            kw = {"mix": 0.8, "n_subjects" if task == "mi" else "n_sessions": 5, **kw}
         return syn.make_mi(**kw) if task == "mi" else syn.make_ss(**kw)
     if task == "mi" and name == "physionet":
         return load_physionet_mi(**kw)
@@ -69,19 +71,37 @@ def load_gaddy(root=None, **kw) -> Recording:
     raise NotImplementedError("Gaddy loader: implement in sequence-model track (see docs).")
 
 
-def load_own(task="ss", root=None, **kw) -> Recording:
-    """Own recordings (scripts/record_session.py): npz with X, y, fs, ch_names, classes, groups."""
+def load_own(task="ss", root=None, exclude_participant=None, **kw) -> Recording:
+    """Own recordings (scripts/calibrate.py): one npz per session, named <participant>_<session>.
+
+    Every file becomes its own group (=> evals are cross-session). Files whose fs / channels /
+    classes differ from the first file are skipped with a warning.
+    """
     root = Path(root or Path(__file__).resolve().parents[3] / "data" / "processed" / f"own_{task}")
-    files = sorted(root.glob("*.npz"))
-    if not files:
-        raise FileNotFoundError(f"No npz in {root}")
-    parts = [np.load(f, allow_pickle=True) for f in files]
+    parts, names = [], []
+    for f in sorted(root.glob("*.npz")):
+        p = np.load(f, allow_pickle=True)
+        who = str(p["participant"]) if "participant" in p.files else f.stem.split("_")[0]
+        if exclude_participant and who == exclude_participant:
+            continue
+        parts.append(p)
+        names.append(f.name)
+    if not parts:
+        raise FileNotFoundError(f"No (usable) npz in {root}")
+    ref = parts[0]
+    key = (float(ref["fs"]), list(ref["ch_names"]), list(ref["classes"]))
+    keep = []
+    for p, n in zip(parts, names, strict=True):
+        if (float(p["fs"]), list(p["ch_names"]), list(p["classes"])) == key:
+            keep.append(p)
+        else:
+            print(f"[load_own] skipping {n}: fs/channels/classes differ from {names[0]}")
     return Recording(
-        np.concatenate([p["X"] for p in parts]),
-        np.concatenate([p["y"] for p in parts]),
-        float(parts[0]["fs"]),
-        list(parts[0]["ch_names"]),
-        list(parts[0]["classes"]),
-        np.concatenate([p["groups"] for p in parts]),
+        np.concatenate([p["X"] for p in keep]),
+        np.concatenate([p["y"] for p in keep]),
+        key[0],
+        key[1],
+        key[2],
+        np.concatenate([np.full(len(p["y"]), i) for i, p in enumerate(keep)]),
         meta={"source": "own"},
     )

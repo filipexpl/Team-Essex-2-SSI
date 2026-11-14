@@ -2,7 +2,7 @@
 
 ## Cel projektu
 Hackathon neurotech. Dwa strumienie dekodowania, jedna wspólna aplikacja:
-1. **Silent speech (sEMG twarzy)** — 8 elektrod na twarzy, klasyfikacja małego słownika słów/komend wypowiadanych bezgłośnie.
+1. **Silent speech (sEMG twarzy)** — 8 elektrod na twarzy, klasyfikacja małego słownika **angielskich** słów/komend wypowiadanych bezgłośnie (tylko EN — nie dodawaj polskich słów).
 2. **Intencje motoryczne (EEG, motor imagery)** — 4 klasy: `left_hand`, `right_hand`, `both_hands`, `feet` (+ opcjonalnie `rest`).
 
 Sprzęt: **BrainAccess MINI** (8 kanałów EEG, elektrody suche, BT) oraz **EXG8** (8 kanałów, do sEMG twarzy).
@@ -25,6 +25,9 @@ make eval-smoke   # eval na danych syntetycznych (CI)
 make eval TASK=mi DATASET=physionet MODEL=csp_lda
 make eval TASK=ss DATASET=gaddy MODEL=td_features_lda
 make data         # pobiera publiczne datasety do data/raw (wymaga sieci)
+make calibrate TASK=ss PID=P07 DEVICE=synthetic|lsl   # kalibracja nowej osoby → profiles/
+make live TASK=ss PID=P07 DEVICE=synthetic|lsl        # dekodowanie na żywo z profilu
+make calib-curve TASK=ss DATASET=own MODEL=td_features_lda  # ile prób kalibracji trzeba
 ```
 
 ## Architektura
@@ -34,8 +37,13 @@ src/ssmi/
   preprocessing/ # filtry (bandpass, notch 50 Hz), epokowanie, resampling
   datasets/      # loadery: PhysioNet EEGMMIDB, BCI IV 2a, Gaddy EMG, nagrania własne
   models/        # baseline'y + registry; interfejs sklearn (fit/predict/predict_proba)
-  evals/         # metryki, splity, runner, raport JSON → results/
+  calibration/   # Euclidean Alignment + UserProfile (kalibracja nowej osoby)
+  evals/         # metryki, splity, runner, krzywa kalibracji, raport JSON → results/
+scripts/         # calibrate.py (nagranie z cue + profil), live.py (dekodowanie)
+configs/vocab.yaml  # słowniki EN (silent speech TYLKO po angielsku) + parametry protokołu
 ```
+Kalibracja i datasety: `docs/calibration.md`, `docs/datasets.md`. Każda zmiana modelu powinna
+być sprawdzona także krzywą kalibracji (nowa osoba = najważniejszy scenariusz demo).
 Wspólny kontrakt danych: `X: (n_trials, n_channels, n_samples)`, `y: (n_trials,)` int, `meta: dict` (fs, ch_names, subject, session).
 
 ## Definicja "done" dla zadania
