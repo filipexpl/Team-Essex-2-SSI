@@ -26,6 +26,8 @@ import warnings
 
 import numpy as np
 
+from ssmi.acquisition.channels import select_channels
+
 SIGNAL_TYPES = ("eeg", "emg", "ecg", "eog", "seeg", "misc")
 
 
@@ -95,6 +97,9 @@ class BoardSource:
     """Live source with the same interface as the other sources:
     attributes fs, n_channels, ch_names; read(seconds, cue) -> (n_channels, n_samples) in uV.
 
+    `channels`: None/'auto' keeps electrode channels only (drops contact flags, IMU, counters,
+    battery and constant channels); or a list of names / 're:<pattern>'.
+
     read() pushes a 'go:<cue>' marker, waits `seconds + lag_s`, then takes the window that started
     at the marker from the newest data. Increase `lag_s` if the database lags behind real time.
     """
@@ -102,6 +107,7 @@ class BoardSource:
     def __init__(
         self,
         device: str | int | None = None,
+        channels=None,
         markers: bool = True,
         lag_s: float = 0.25,
         to_microvolts: bool = True,
@@ -126,7 +132,9 @@ class BoardSource:
             self.device_id = matches[0]
         raw = raws[self.device_id]
         self.fs = float(raw.info["sfreq"])
-        self.ch_names = _signal_channels(raw)
+        typed = _signal_channels(raw)
+        x1 = raw.get_data(picks=typed)
+        self.ch_names = [typed[i] for i in select_channels(typed, channels, x1)]
         self.n_channels = len(self.ch_names)
         self.lag_s, self.scale = lag_s, (1e6 if to_microvolts else 1.0)
         self.devices = ids

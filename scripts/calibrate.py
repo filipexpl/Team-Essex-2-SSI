@@ -100,7 +100,17 @@ def main(argv=None):
     ap.add_argument("--trials", type=int, default=15, help="trials per class")
     ap.add_argument("--model", default=None)
     ap.add_argument("--mode", choices=["pooled", "subject"], default="pooled")
-    ap.add_argument("--from-npz", default=None)
+    ap.add_argument(
+        "--from-npz",
+        nargs="+",
+        default=None,
+        help="re-calibrate from recorded session file(s); several = pooled sessions",
+    )
+    ap.add_argument(
+        "--channels",
+        default="auto",
+        help="auto (electrodes only) | comma-separated names | re:<pattern>",
+    )
     ap.add_argument("--realtime", action="store_true", help="real timing for synthetic device")
     a = ap.parse_args(argv)
 
@@ -112,13 +122,22 @@ def main(argv=None):
     model = a.model or DEFAULT_MODEL[a.task]
 
     if a.from_npz:
-        d = np.load(a.from_npz, allow_pickle=True)
-        calib = Recording(d["X"], d["y"], float(d["fs"]), list(d["ch_names"]), list(d["classes"]))
+        calib = load_own(task=a.task, files=a.from_npz, channels=a.channels)
+        print(
+            f"      {len(a.from_npz)} session file(s), {len(calib.y)} trials, fs={calib.fs} Hz, "
+            f"channels={calib.ch_names}"
+        )
     else:
         classes = classes_for(a.task, a.vocab, cfg)
         realtime = a.device in ("lsl", "board") or a.realtime
         src = open_source(
-            a.device, a.task, classes, realtime=realtime, board_device=a.board_device, lag_s=a.lag
+            a.device,
+            a.task,
+            classes,
+            realtime=realtime,
+            board_device=a.board_device,
+            lag_s=a.lag,
+            channels=a.channels,
         )
         print(f"      device={a.device} fs={src.fs} Hz channels={list(src.ch_names)}")
         board_rec = a.record_dir and getattr(src, "control", None)
@@ -183,7 +202,7 @@ def main(argv=None):
         )
     print(
         f"      profil → {p.relative_to(ROOT)}\n      dalej: python scripts/live.py "
-        f"--task {a.task} --user {a.user} --device {a.device}"
+        f"--task {a.task} --user {a.user} --device {'board' if a.from_npz else a.device}"
     )
 
 

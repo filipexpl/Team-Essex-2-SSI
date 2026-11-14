@@ -27,14 +27,17 @@ class FakeDB:
 
     def __init__(self, fs=500.0):
         self.fs, self.t0 = fs, time.time()
-        self.names = [f"EMG{i}" for i in range(1, 9)] + ["ACC_X", "Sync"]
-        self.types = ["emg"] * 8 + ["bio", "stim"]
+        # like the real EXG8 stream: everything typed as a signal channel
+        self.names = [f"F{i}" for i in range(1, 9)] + ["contact_F1", "Accel_x", "Sample"]
+        self.types = ["eeg"] * 11
 
     def get_mne(self, duration=None):
         n_all = int((time.time() - self.t0 + 10) * self.fs)
         n = n_all if duration is None else int(duration * self.fs)
         idx = np.arange(n_all - n, n_all, dtype=float)
-        return {"EXG8-1234": FakeRaw(np.tile(idx * 1e-6, (10, 1)), self.fs, self.names, self.types)}
+        data = np.tile(idx * 1e-6, (11, 1))
+        data[8] = 1.0  # contact flag: constant
+        return {"EXG8-1234": FakeRaw(data, self.fs, self.names, self.types)}
 
 
 def fake_bb(log):
@@ -61,7 +64,7 @@ def fake_bb(log):
 
 def test_board_source_reads_signal_channels_in_uv():
     src = BoardSource(markers=False, lag_s=0.0, bb_module=fake_bb([]))
-    assert src.fs == 500.0 and src.n_channels == 8 and "Sync" not in src.ch_names
+    assert src.fs == 500.0 and src.ch_names == [f"F{i}" for i in range(1, 9)]
     x = src.read(0.2, cue="yes")
     assert x.shape == (8, 100)
     assert np.allclose(np.diff(x[0]), 1.0)  # contiguous samples, converted to uV

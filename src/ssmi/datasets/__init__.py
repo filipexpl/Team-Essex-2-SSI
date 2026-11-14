@@ -75,31 +75,50 @@ def load_gaddy(root=None, **kw) -> Recording:
     raise NotImplementedError("Gaddy loader: implement in sequence-model track (see docs).")
 
 
-def load_own(task="ss", root=None, exclude_participant=None, **kw) -> Recording:
+def load_session(path, channels=None) -> dict:
+    """One own session file -> dict(X, y, fs, ch_names, classes, participant), electrode channels
+    only (sessions recorded before channel selection may contain contact/IMU/battery channels)."""
+    from ssmi.acquisition.channels import select_channels
+
+    p = np.load(path, allow_pickle=True)
+    names = [str(c) for c in p["ch_names"]]
+    idx = select_channels(names, channels, p["X"])
+    who = str(p["participant"]) if "participant" in p.files else Path(path).stem.split("_")[0]
+    return {
+        "X": p["X"][:, idx],
+        "y": p["y"],
+        "fs": float(p["fs"]),
+        "ch_names": [names[i] for i in idx],
+        "classes": [str(c) for c in p["classes"]],
+        "participant": who,
+        "name": Path(path).name,
+    }
+
+
+def load_own(
+    task="ss", root=None, exclude_participant=None, channels=None, files=None, **kw
+) -> Recording:
     """Own recordings (scripts/calibrate.py): one npz per session, named <participant>_<session>.
 
     Every file becomes its own group (=> evals are cross-session). Files whose fs / channels /
     classes differ from the first file are skipped with a warning.
     """
     root = Path(root or Path(__file__).resolve().parents[3] / "data" / "processed" / f"own_{task}")
-    parts, names = [], []
-    for f in sorted(root.glob("*.npz")):
-        p = np.load(f, allow_pickle=True)
-        who = str(p["participant"]) if "participant" in p.files else f.stem.split("_")[0]
-        if exclude_participant and who == exclude_participant:
-            continue
-        parts.append(p)
-        names.append(f.name)
+    paths = [Path(f) for f in files] if files else sorted(root.glob("*.npz"))
+    parts = [load_session(f, channels) for f in paths]
+    parts = [
+        p for p in parts if not (exclude_participant and p["participant"] == exclude_participant)
+    ]
     if not parts:
         raise FileNotFoundError(f"No (usable) npz in {root}")
     ref = parts[0]
-    key = (float(ref["fs"]), list(ref["ch_names"]), list(ref["classes"]))
+    key = (ref["fs"], ref["ch_names"], ref["classes"])
     keep = []
-    for p, n in zip(parts, names, strict=True):
-        if (float(p["fs"]), list(p["ch_names"]), list(p["classes"])) == key:
+    for p in parts:
+        if (p["fs"], p["ch_names"], p["classes"]) == key:
             keep.append(p)
         else:
-            print(f"[load_own] skipping {n}: fs/channels/classes differ from {names[0]}")
+            print(f"[load_own] skipping {p['name']}: fs/channels/classes differ from {ref['name']}")
     return Recording(
         np.concatenate([p["X"] for p in keep]),
         np.concatenate([p["y"] for p in keep]),
