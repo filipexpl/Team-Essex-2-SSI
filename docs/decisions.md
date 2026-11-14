@@ -1,5 +1,9 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-14 — Hardware supports 250 and 500 Hz. Silent speech is recorded at **500 Hz**
+  (Nyquist 250 Hz, most of the sEMG band); 250 Hz versions are made offline for IITK comparisons.
+  Gaddy notebook simulates both 500 and 250 Hz.
+
 - 2026-11-14 — IITK loader (words + words-from-sentences) and `evals.transfer`. TD-features+LDA:
   isolated words 0.71 (LOBO), but pre-onset rest alone 0.24 (chance 0.045) => per-file confound;
   words -> sentences 0.05 (chance). Keep randomized word order in our protocol; judge SS models on
