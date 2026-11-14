@@ -16,9 +16,11 @@ mu-rhythm frequency). We handle it in two layers:
 make calibrate TASK=ss PID=P07 DEVICE=synthetic
 make live TASK=ss PID=P07 DEVICE=synthetic
 
-# 1. real device: start BrainAccess Board, enable LSL streaming, then
-python scripts/calibrate.py --task ss --user P07 --device lsl --vocab core6 --trials 15
-python scripts/live.py      --task ss --user P07 --device lsl
+# 1. real device: start BrainAccess Board, connect the amplifier, then
+python scripts/board_check.py
+python scripts/calibrate.py --task ss --user P07 --device board --vocab core6 --trials 15 \
+       --study generic --record-dir recordings/
+python scripts/live.py      --task ss --user P07 --device board
 ```
 
 | Step | Silent speech (EXG8) | Motor imagery (MINI) |
