@@ -14,6 +14,8 @@ fit Euclidean alignment + model (pooled with other people's data if available) -
 from __future__ import annotations
 
 import argparse
+import json
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -30,6 +32,24 @@ from ssmi.calibration import calibrate_user  # noqa: E402
 from ssmi.datasets import load_own  # noqa: E402
 
 DEFAULT_MODEL = {"mi": "csp_lda", "ss": "td_features_lda"}
+PROTOCOL_VERSION = "0.2"
+
+
+def git_commit() -> str:
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        dirty = subprocess.run(
+            ["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True, timeout=5
+        ).stdout.strip()
+        return out.stdout.strip() + ("-dirty" if dirty else "") or "unknown"
+    except Exception:  # noqa: BLE001
+        return "unknown"
 
 
 def classes_for(task: str, vocab: str | None, cfg: dict) -> list[str]:
@@ -50,6 +70,8 @@ def record(task, src, classes, trials, proto, cues, realtime, seed=0) -> tuple[n
         print(
             f"  ({i + 1:>3}/{len(order)})  {cues.get(name, name.upper()):<50}", end="", flush=True
         )
+        if hasattr(src, "mark"):
+            src.mark(f"cue:{name}")
         if realtime:
             time.sleep(proto["prepare"])
         print(" ● TERAZ", flush=True)
@@ -69,7 +91,11 @@ def main(argv=None):
     ap.add_argument("--task", choices=["mi", "ss"], required=True)
     ap.add_argument("--user", required=True, help="anonymous participant id, e.g. P07")
     ap.add_argument("--session", default=None, help="session id (default: timestamp)")
-    ap.add_argument("--device", choices=["synthetic", "lsl"], default="synthetic")
+    ap.add_argument("--device", choices=["synthetic", "board", "lsl"], default="synthetic")
+    ap.add_argument("--board-device", default=None, help="Board device id (substring) if several")
+    ap.add_argument("--lag", type=float, default=0.25, help="Board database lag in seconds")
+    ap.add_argument("--study", default="generic", help="replicated protocol, see protocol doc")
+    ap.add_argument("--record-dir", default=None, help="also start a Board recording (.db) here")
     ap.add_argument("--vocab", default=None, help="key from configs/vocab.yaml")
     ap.add_argument("--trials", type=int, default=15, help="trials per class")
     ap.add_argument("--model", default=None)
@@ -90,9 +116,24 @@ def main(argv=None):
         calib = Recording(d["X"], d["y"], float(d["fs"]), list(d["ch_names"]), list(d["classes"]))
     else:
         classes = classes_for(a.task, a.vocab, cfg)
-        realtime = a.device == "lsl" or a.realtime
-        src = open_source(a.device, a.task, classes, realtime=realtime)
-        X, y, rest = record(a.task, src, classes, a.trials, proto, cues, realtime)
+        realtime = a.device in ("lsl", "board") or a.realtime
+        src = open_source(
+            a.device, a.task, classes, realtime=realtime, board_device=a.board_device, lag_s=a.lag
+        )
+        print(f"      device={a.device} fs={src.fs} Hz channels={list(src.ch_names)}")
+        board_rec = a.record_dir and getattr(src, "control", None)
+        if board_rec:
+            print(
+                "      Board recording:",
+                src.control.start_recording(
+                    a.record_dir, a.user, session, 1, f"{a.task}-{a.study}"
+                ),
+            )
+        try:
+            X, y, rest = record(a.task, src, classes, a.trials, proto, cues, realtime)
+        finally:
+            if board_rec:
+                print("      Board recording:", src.control.stop_recording())
         out_dir.mkdir(parents=True, exist_ok=True)
         path = out_dir / f"{a.user}_{session}.npz"
         np.savez(
@@ -107,6 +148,12 @@ def main(argv=None):
             participant=a.user,
             session=session,
             device=a.device,
+            vocab=a.vocab or ("core6" if a.task == "ss" else "four_class"),
+            study=a.study,
+            protocol_version=PROTOCOL_VERSION,
+            git_commit=git_commit(),
+            timing=json.dumps(proto),
+            markers=np.array(getattr(src, "marker_log", []), dtype=object),
         )
         print(f"      zapisano sesję → {path.relative_to(ROOT)}")
         calib = Recording(X, y, src.fs, list(src.ch_names), classes)

@@ -18,7 +18,7 @@ dependencies = [
 dev = ["pytest>=8", "ruff>=0.5"]
 eeg = ["mne>=1.7", "moabb>=1.1", "pyriemann>=0.6"]
 dl = ["torch>=2.3", "braindecode>=0.8"]
-hw = ["pylsl>=1.16", "brainaccess"]
+hw = ["pylsl>=1.16", "brainaccess_board", "mne>=1.7"]
 all = ["ssmi[dev,eeg,dl,hw]"]
 
 [tool.setuptools.packages.find]

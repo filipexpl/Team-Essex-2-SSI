@@ -61,7 +61,18 @@ class SyntheticSource:
         return x[:, :n]
 
 
-def open_source(device: str, task: str, class_names: list[str], realtime: bool = False):
+def open_source(
+    device: str,
+    task: str,
+    class_names: list[str],
+    realtime: bool = False,
+    board_device: str | None = None,
+    lag_s: float = 0.25,
+):
+    if device == "board":  # BrainAccess Board Python API (recommended for real hardware)
+        from ssmi.acquisition.board import BoardSource
+
+        return BoardSource(device=board_device, lag_s=lag_s)
     if device == "synthetic":
         return SyntheticSource(task, class_names, realtime=realtime)
     if device == "lsl":

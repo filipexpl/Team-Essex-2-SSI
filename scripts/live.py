@@ -25,14 +25,14 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", choices=["mi", "ss"], required=True)
     ap.add_argument("--user", required=True)
-    ap.add_argument("--device", choices=["synthetic", "lsl"], default="synthetic")
+    ap.add_argument("--device", choices=["synthetic", "board", "lsl"], default="synthetic")
     ap.add_argument("--n", type=int, default=0, help="non-interactive: N random cued trials")
     a = ap.parse_args(argv)
 
     prof = UserProfile.load(a.user, a.task)
     proto = yaml.safe_load((ROOT / "configs" / "vocab.yaml").read_text())["protocol"]
     proto = proto["motor_imagery" if a.task == "mi" else "silent_speech"]
-    src = open_source(a.device, a.task, prof.class_names, realtime=a.device == "lsl")
+    src = open_source(a.device, a.task, prof.class_names, realtime=a.device in ("lsl", "board"))
     if src.fs != prof.fs:
         raise SystemExit(f"Device fs {src.fs} != profile fs {prof.fs}. Re-calibrate.")
     print(f"Profil {a.user}/{a.task}: klasy {prof.class_names}, model {prof.model_name}")

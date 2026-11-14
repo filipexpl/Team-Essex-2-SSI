@@ -1,5 +1,23 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-14 — Gaddy & Klein reproduction in Colab (Python 3.13, recent PyTorch; fixes: ctcdecode ->
+  pyctcdecode shim, current jiwer, `batch_first` in transformer.py; kenlm does not build, so no
+  language model). Pre-trained recognition model, silent test set (100 utterances), WER without LM:
+  **1000 Hz 0.400**, band-limited **500 Hz 0.880**, **250 Hz 0.969** (authors: ~0.28 with LM).
+  The 500/250 Hz drop is distribution shift of a model trained on the full band, not yet the
+  hardware cost; next: fine-tune at 500 Hz (notebook section 6).
+
+- 2026-11-14 — Real-time decoding (`ssmi.realtime`, `scripts/realtime.py`). SS: EMG energy onset
+  (rest median + 6 MAD) cuts the window at the onset offset learned at calibration; MI: 3 s
+  sliding window, EMA-smoothed, reported on stable change. Simulated person: SS 23/23 words
+  detected, 0 false triggers, 18/23 correct, <= 8.3 ms compute.
+
+- 2026-11-14 — Acquisition through the BrainAccess Board Python API 1.0.2 (`BoardSource`):
+  live windows from `get_mne`, Board `.db` recording via `start_recording`, cue/go markers on our
+  own LSL outlet attached with `connect_device`. Session files now store vocab, study,
+  protocol_version, git_commit, timing and markers. Units, DB lag and markers-in-.db unverified
+  until `scripts/board_check.py` runs on hardware.
+
 - 2026-11-14 — Hardware supports 250 and 500 Hz. Silent speech is recorded at **500 Hz**
   (Nyquist 250 Hz, most of the sEMG band); 250 Hz versions are made offline for IITK comparisons.
   Gaddy notebook simulates both 500 and 250 Hz.

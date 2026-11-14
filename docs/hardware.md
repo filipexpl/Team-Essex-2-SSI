@@ -28,8 +28,8 @@
 | Bipolar / monopolar inputs | monopolar, common ref | ? | EMG lepiej bipolarnie |
 | Hardware filters | ? | ? | high-pass dla EMG |
 | Dry or gel electrodes allowed | dry | ? | |
-| Streaming: LSL from BrainAccess Board? | ? | ? | wybór LSLSource vs SDK |
-| Python SDK version + class names | ? | ? | `acquisition/brainaccess_stream.py` |
+| Streaming | Board Python API (`brainaccess_board`, 1.0.2): `db_connect` + `get_mne` → `BoardSource` | same | run `python scripts/board_check.py` and paste the output here |
+| Units / DB lag / markers in .db | ? | ? | `board_check.py` prints all three |
 | Can both devices run at once, synced? | hyperscanning supported | ? | hybrid EEG+EMG |
 
 ## Risks
@@ -39,3 +39,10 @@
 - Dry EEG + 8 channels: 4-class MI is hard. Expect ~40–60 % for our own data; plan a 2-class
   (left vs right) fallback demo and use `both_hands`/`feet` as stretch goal.
 - Bluetooth packet loss → check effective fs in `signal-qc`.
+
+## Acquisition path (2026-11-14)
+BrainAccess Board Python API 1.0.2 (`pip install brainaccess_board`, Board app running, amplifier
+connected): live data via `db_connect()` + `get_mne(duration)`, recording control via
+`msg_connect()` commands (`start_recording` / `stop_recording`), markers as our own LSL outlet
+attached with `connect_device`. Implemented in `src/ssmi/acquisition/board.py`; use
+`--device board` in `calibrate.py` / `live.py`. LSLSource stays as a fallback.
