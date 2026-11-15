@@ -90,7 +90,7 @@ def main(argv=None):
     out = run(a.task, a.dataset, a.model, tuple(int(k) for k in a.ks.split(",")))
     (ROOT / "results").mkdir(exist_ok=True)
     path = ROOT / "results" / f"calib_{a.task}_{a.dataset}_{a.model}.json"
-    path.write_text(json.dumps(out, indent=2))
+    path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     ks = out["ks"]
     print(
         f"calibration curve {a.task}/{a.dataset}/{a.model} (chance {out['chance']:.2f}, "

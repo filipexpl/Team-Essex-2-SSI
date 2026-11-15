@@ -20,6 +20,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+if hasattr(sys.stdout, "reconfigure"):  # Windows: cp1250 console/redirect cannot print ● → ę
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from ssmi.calibration import UserProfile  # noqa: E402
 from ssmi.realtime import LSLOutput, make_decoder, run  # noqa: E402

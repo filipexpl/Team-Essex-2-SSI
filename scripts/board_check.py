@@ -18,6 +18,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+if hasattr(sys.stdout, "reconfigure"):  # Windows: cp1250 console/redirect cannot print ● → ę
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from ssmi.acquisition.board import BoardControl, BoardSource, load_board_db  # noqa: E402
 
