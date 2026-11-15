@@ -27,6 +27,7 @@ where = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+extend-exclude = ["notebooks", "SilentSpeech1.py"]  # Colab shell cells; teammate scratch script
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

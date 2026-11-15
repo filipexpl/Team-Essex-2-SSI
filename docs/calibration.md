@@ -18,6 +18,7 @@ make live TASK=ss PID=P07 DEVICE=synthetic
 
 # 1. real device: start BrainAccess Board, connect the amplifier, then
 python scripts/board_check.py
+python scripts/qc.py            # calibrate only after it prints OK
 python scripts/calibrate.py --task ss --user P07 --device board --vocab core6 --trials 15 \
        --study generic --record-dir recordings/
 python scripts/live.py      --task ss --user P07 --device board

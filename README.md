@@ -12,6 +12,7 @@ make eval-smoke   # end-to-end eval on synthetic data
 make eval TASK=mi DATASET=physionet MODEL=csp_lda   # needs `pip install -e ".[eeg]"` + internet
 ```
 
+- `docs/quickstart.md` — **running on the device (macOS / Windows)**: install, signal check, calibration, real time
 - `CLAUDE.md` — rules for Claude (also read it, humans)
 - `docs/hardware.md` — devices, montage, electrode placement, open questions
 - `docs/datasets.md` — public datasets and how we use them

@@ -1,5 +1,10 @@
 # Decision log (append-only, newest on top)
 
+- 2026-11-15 — `qc.py` (committed with hard-coded Windows names F3..O2) crashed on the Mac (F1..F8).
+  Replaced by `scripts/qc.py`: channels auto-selected via BoardSource, scipy notch + 20-450 Hz
+  (no MNE filter-length warning), relaxed vs clench per channel with an OK / fix-first verdict;
+  root `qc.py` kept as a wrapper. Added `docs/quickstart.md` (macOS + Windows). Tests 32 pass.
+
 - 2026-11-14 — First EXG8 recordings (P01, 2 sessions, core6): Board streams 25 channels at
   1000 Hz incl. contact flags, IMU, counter, battery; they reached the model (overflow, CV 0.30-0.32).
   Fix: name-based electrode selection + constant-channel drop in BoardSource and when loading
