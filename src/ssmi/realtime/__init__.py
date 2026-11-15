@@ -155,7 +155,7 @@ def run(
     decoder.calibrate_rest(source.latest(rest_s))
     say("Ready. Decoding continuously (Ctrl+C to stop).")
     events: list[Event] = []
-    log = open(log_path, "a") if log_path else None  # noqa: SIM115
+    log = open(log_path, "a", encoding="utf-8") if log_path else None  # noqa: SIM115
     t_start = clock()
     try:
         while duration_s is None or clock() - t_start < duration_s:

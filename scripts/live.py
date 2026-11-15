@@ -16,6 +16,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+if hasattr(sys.stdout, "reconfigure"):  # Windows: cp1250 console/redirect cannot print ● → ę
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from ssmi.acquisition.sources import open_source  # noqa: E402
 from ssmi.calibration import UserProfile  # noqa: E402
@@ -30,7 +32,9 @@ def main(argv=None):
     a = ap.parse_args(argv)
 
     prof = UserProfile.load(a.user, a.task)
-    proto = yaml.safe_load((ROOT / "configs" / "vocab.yaml").read_text())["protocol"]
+    proto = yaml.safe_load((ROOT / "configs" / "vocab.yaml").read_text(encoding="utf-8"))[
+        "protocol"
+    ]
     proto = proto["motor_imagery" if a.task == "mi" else "silent_speech"]
     src = open_source(
         a.device,

@@ -49,7 +49,7 @@ def run(task, dataset, model_name, scheme="leave_one_group_out", seed=0):
 
 
 def check(out) -> list[str]:
-    th = yaml.safe_load((ROOT / "evals" / "thresholds.yaml").read_text())
+    th = yaml.safe_load((ROOT / "evals" / "thresholds.yaml").read_text(encoding="utf-8"))
     key = f"{out['task']}/{out['dataset']}"
     rules = th.get(key, {})
     fails = []
@@ -76,7 +76,7 @@ def main(argv=None):
     out = run(a.task, a.dataset, a.model, a.scheme)
     (ROOT / "results").mkdir(exist_ok=True)
     path = ROOT / "results" / f"{a.task}_{a.dataset}_{a.model}.json"
-    path.write_text(json.dumps(out, indent=2))
+    path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(
         f"[{a.task}/{a.dataset}/{a.model}] bal_acc={out['balanced_accuracy']:.3f} "
         f"(chance {out['chance']:.2f}) kappa={out['kappa']:.2f} "

@@ -25,6 +25,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+if hasattr(sys.stdout, "reconfigure"):  # Windows: cp1250 console/redirect cannot print ● → ę
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from ssmi.acquisition import Recording  # noqa: E402
 from ssmi.acquisition.sources import open_source  # noqa: E402
@@ -114,7 +116,7 @@ def main(argv=None):
     ap.add_argument("--realtime", action="store_true", help="real timing for synthetic device")
     a = ap.parse_args(argv)
 
-    cfg = yaml.safe_load((ROOT / "configs" / "vocab.yaml").read_text())
+    cfg = yaml.safe_load((ROOT / "configs" / "vocab.yaml").read_text(encoding="utf-8"))
     proto = cfg["protocol"]["motor_imagery" if a.task == "mi" else "silent_speech"]
     cues = cfg["motor_imagery"]["cues"] if a.task == "mi" else {}
     session = a.session or time.strftime("%Y%m%d-%H%M%S")

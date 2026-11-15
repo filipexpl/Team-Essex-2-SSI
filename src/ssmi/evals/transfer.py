@@ -63,7 +63,7 @@ def main(argv=None):
     (ROOT / "results").mkdir(exist_ok=True)
     tag = "_ea" if a.align else ""
     path = ROOT / "results" / f"transfer_{a.task}_{a.train}_to_{a.test}_{a.model}{tag}.json"
-    path.write_text(json.dumps(out, indent=2))
+    path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(
         f"[{a.train} -> {a.test}, {a.model}{', EA' if a.align else ''}] "
         f"bal_acc={out['balanced_accuracy']:.3f} (chance {out['chance']:.3f}, "

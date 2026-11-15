@@ -70,7 +70,7 @@ def test_vocab_is_english_strings():
 
     from ssmi.calibration import PROFILES
 
-    cfg = yaml.safe_load((PROFILES.parent / "configs" / "vocab.yaml").read_text())
+    cfg = yaml.safe_load((PROFILES.parent / "configs" / "vocab.yaml").read_text(encoding="utf-8"))
     for name, words in cfg["silent_speech"].items():
         assert all(isinstance(w, str) for w in words), f"{name}: unquoted yes/no -> bool"
         assert all(w.isascii() for w in words), f"{name}: non-English characters"
