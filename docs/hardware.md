@@ -54,4 +54,6 @@ attached with `connect_device`. Implemented in `src/ssmi/acquisition/board.py`; 
   electrodes (by name, and drops constant channels). Use `--channels F1,F2,...` to override.
 - Units after BoardSource (x1e6): microvolts. EMG channels: DC offset ~ -2000..9000 uV (removed by
   the band-pass), std ~80-180 uV during the calibration block.
+- 2026-11-15, Windows PC with another Board install: same EXG8 inputs named `F3, F4, C3, C4, P3, P4,
+  O1, O2` (EEG labels, header "ref Fp1"). Names are installation-dependent: never hard-code them.
 - Before this fix, calibration fed all 25 channels to the model (numerical overflow, CV 0.30-0.32).
