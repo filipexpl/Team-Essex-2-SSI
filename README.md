@@ -1,4 +1,4 @@
-# Team-E-sex-2-SSI
+# Team-Essex-2-SSI
 
 **Silent Speech + Motor Imagery Decoder**
 
